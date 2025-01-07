@@ -1,0 +1,124 @@
+.spotify{
+    color: #ffffff;
+    padding: 8px;
+}
+
+.weather{
+  padding: 16px;
+  .forecastsInfo{
+    .today{
+      .icon{
+        font-size: 64px;
+      }
+      .info{
+        .conditionInfo{
+          .temperature{
+            font-size: 24px;
+            font-weight: bold;
+          }
+          .conditionText{
+            font-size: 16px;
+          }
+        }
+      }
+    }
+    .forecasts{
+      .forecast{
+        border: 1px solid #F2EFEA;
+        padding: 2px;
+        border-radius: 8px;
+        .temps{
+          .max{
+            // color: #F44336;
+            font-weight: 500;
+          }
+          .min{
+            font-weight: 300;
+            // color: #1976D2       
+          }
+        }
+      }
+    }
+  }
+  .place{
+    .city{
+      font-weight: bold;
+      font-size: 32px;
+      letter-spacing: 12px;
+    }
+    .country{
+      font-weight: lighter;
+    }
+  }
+}
+
+.progressbar{
+  margin: 0 12px;
+  trough{
+        border-radius: 8px;
+        min-height: 10px;
+        padding: 4px 0 4px 0;
+
+        progress {
+          background-color: green;
+          border-radius: 8px;
+          padding: 4px;
+        }
+
+        slider {
+          background-color: green;
+          border-radius: 8px;
+        }
+        
+  }
+}
+
+trough{
+  background-color: #1C1F20;
+  padding: 0 8px 0 8px;
+  border-radius: 8px;
+}
+
+.thumbnail{
+  margin: 12px;
+  border-radius: 14px;
+  border: 1px solid white;
+}
+
+.time{
+  font-size: 64px;
+  font-weight: bold;
+}
+
+progress{
+  background-color: white;
+  border-radius: 8px 8px 4px 4px;
+  padding: 8px;
+}
+
+.tile{
+  background-color: #090C0A;
+  border-radius: 14px;
+  border: 1px #F2EFEA solid;
+}
+
+.infobarLabel{
+  font-size: 16px;
+}
+
+.powerButtons{
+  padding: 10px;
+}
+
+.powerButtons > box > button{
+  padding:  8px;
+  background-color:#1C1F20;
+  font-size: 32px;
+  border-radius: 14px;
+  border: 1px solid #F2EFEA;
+}
+
+.apps{
+  font-size: 32px;
+  padding: 16px;
+}
