@@ -1,0 +1,227 @@
+(defwindow menu
+  :stacking "fg"
+  :monitor "[1,0]"
+  :wm-ignore true
+  :geometry (geometry :width "60%" :height "50%" :anchor "center")
+  (menu_layout)
+  )
+
+(defwidget menu_layout []
+  (box :class "menu-layout"
+    :space-evenly true
+    :spacing 10
+    :orientation "vertical"
+    (box :class "top"
+      :spacing 10
+      :space-evenly false
+      (spotify :music music :position position)
+      (apps)
+      (weatherInfo :weather weather)
+    )
+    (box :class "bottom"
+      :spacing 10
+      :space-evenly false
+      (systeminfo)
+      (time :time current_time)
+      (powerButtons)
+    )
+  )
+)
+
+(defwidget weatherInfo [weather]
+  (box :class "tile weather" :orientation "v" :space-evenly false :spacing 20 :width 350
+    (box :class "forecastsInfo" 
+    (box :class "today" :orientation "v" :space-evenly false :valign "center" :halign "start"
+      (label :xalign 0.32 :class "icon" :text "" )
+      (box :class "info" :orientation "v" :space-evenly false :halign "center"
+        (box :class "conditionInfo" :orientation "v"
+          (label :class "temperature" :text "${weather.current.temp_c}°C")
+          (label :class "conditionText" :text {weather.current.condition.text})
+        )
+      )
+    )
+    (box :class "forecasts" :orientation "v" :space-evenly false :spacing 10
+      (for day in {weather.forecast.forecastday}
+        (box :class "forecast"  :orientation "h" :halign "center" :width 159
+            (label :class "date" :text {day.date})
+            (box :class "temps" :orientation "v" :space-evenly false
+              (label :class "max" :text "${day.day.maxtemp_c}°C")
+              (label :class "min" :text "${day.day.mintemp_c}°C")
+            )
+        )
+      )
+    )
+
+    )
+    (box :class "place" :orientation "v" :space-evenly false :valign "end"
+      (label :class "city" :text {weather.location.name})
+      (label :class "country" :text {weather.location.country}) 
+    )
+  )
+)
+
+
+(defwidget apps []
+  (box
+    :class "apps tile"
+    :orientation "v"
+    :width 250
+    (box
+      :orientation "h"
+      (button :onclick "firefox" " ")
+      (button :onclick "nohup spotify-launcher &" " ")
+      (button :onclick "firefox --new-window twitch.tv" " ")
+    )
+    (box
+      :orientation "h"
+      (button :onclick "nohup discord &" " ")
+      (button :onclick "firefox --new-window github.com" " ")
+      (button :onclick "firefox --new-window youtube.com" " ")
+    )
+  )
+)
+
+(defwidget powerButtons []
+  (box
+    :orientation "v"
+    :class "powerButtons tile"
+    :spacing 20
+    :width 400
+    (box 
+      :orientation "h"
+      :spacing 20
+      (button :style "color: #C62828" :onclick "poweroff" "⏻" )
+      (button :onclick "reboot" "")
+    )
+    (box 
+      :orientation "h"
+      :spacing 20
+      (button :onclick "loginctl kill-session self" "󰍃" )
+      (button :onclick "systemctl suspend" "󰤄")
+    )
+  )
+)
+
+(defpoll position
+  :interval "1s"
+  "playerctl metadata --player=spotify --format '{{ trunc(position / mpris:length, 4) }}' | awk -F'…' '{print $1}'"
+)
+ 
+(defpoll music :interval "1s" "~/.config/eww/menu/music.sh")
+
+(defpoll weather :interval "1800s" "weather")
+
+(defwidget spotify [music position ?orientation]
+  (box :class "spotify tile"
+    :width 600
+    :orientation "horizontal"
+    :halign "start"
+    (image
+        :class "thumbnail"
+        :style "background-image: url('${music.url}'); background-size: cover"
+        :halign "start"
+        :width 250
+      )
+    (box
+      :space-evenly true
+      :hexpand true
+      :class "top"
+      :orientation "vertical"
+      :halign "fill"
+      (label :halign "center" :text "playing: ${music.title} by ${music.artist}")
+    (progress
+        :class "progressbar"
+        :orientation "h"
+        :value {position * 100}
+    )
+    (box :class "buttons"
+      :orientation "horizontal"
+      :space-evenly true
+      (button :onclick "playerctl previous" "󰒮")
+      (button :onclick "playerctl play-pause" "")
+      (button :onclick "playerctl next" "󰒭")
+    )
+    )
+  )
+)
+
+
+(defpoll current_time :interval "1s"
+  :initial `date +'{"hour":"%H","min":"%M", "sec":"%S" }'`
+  `date +'{"hour":"%H","min":"%M", "sec":"%S"}'`)
+
+(defwidget time [time]
+  (box
+    :class "time tile"
+    :hexpand false
+    :width 300
+    (label  :class "time" :text "${time.hour}:${time.min}:${time.sec}")
+  )
+)
+
+(defwidget infobar [value unit name displayed_value icon]
+    (box
+      :orientation "v"
+      :halign "end"
+      (box
+        :width 100
+        :valign "end"
+        :orientation "v"
+        :space-evenly false
+        :style "padding: 16px;"
+        (progress
+          :halign "center"
+          :valign "end"
+          :flipped true
+          :class name
+          :value value
+          :orientation "v"
+          :height 200
+        )
+        (label :class "infobarLabel" :valign "end" :text "${icon}${displayed_value}${unit}")
+      )
+    )
+)
+
+(defwidget systeminfo []
+  (box
+    :class "sysInfo tile"
+    :orientation "horizontal"
+    :width 500
+    (box
+      :orientation "horizontal"
+      :halign "center"
+      :space-evenly false
+    (infobar 
+      :value {EWW_BATTERY["BAT0"].capacity}
+      :unit "%"
+      :name "bat"
+      :displayed_value {EWW_BATTERY["BAT0"].capacity} 
+      :icon "󰁹"
+    )
+    (infobar
+      :value {EWW_DISK["/"].used_perc}
+      :unit "GB"
+      :name "disk"
+      :displayed_value "${round(EWW_DISK["/"].free / 1000000000, 2)}/${round(EWW_DISK["/"].total / 1000000000, 2)}"
+      :icon " "
+    )
+    (infobar
+      :value {EWW_RAM["used_mem_perc"]}
+      :unit "%"
+      :name "ram"
+      :displayed_value {round(EWW_RAM["used_mem_perc"], 2)}
+      :icon "  "
+    )
+    (infobar
+      :value {EWW_CPU}
+      :unit "%"
+      :name "cpu"
+      :displayed_value {round(EWW_CPU["avg"], 2)} 
+      :icon "  "
+    )
+    )
+  )
+)
+
+
