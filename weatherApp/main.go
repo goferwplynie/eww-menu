@@ -33,7 +33,7 @@ type Weather struct {
 }
 
 func main() {
-	res, err := http.Get("http://api.weatherapi.com/v1/forecast.json?key=ca5ac2ea8e104811a31205754241012&q=Warsaw&days=7&aqi=no&alerts=no")
+	res, err := http.Get("http://api.weatherapi.com/v1/forecast.json?key=yourkey&q=Warsaw&days=7&aqi=no&alerts=no")
 	if err != nil {
 		panic(err)
 	}
